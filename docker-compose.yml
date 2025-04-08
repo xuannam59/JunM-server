@@ -1,0 +1,23 @@
+services:
+  mysql-music:
+    image: mysql:8.0.36
+    container_name: music_db
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: musicdb
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: mypassword
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-music-data:/var/lib/mysql
+    networks:
+      - music-network
+
+volumes:
+  mysql-music-data:
+
+
+networks:
+  music-network:
+    driver: bridge
