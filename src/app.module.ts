@@ -3,12 +3,22 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './database/database.module';
+import { UsersModule } from './modules/users/users.module';
+import { ArtistsModule } from './modules/artists/artists.module';
+import { SongsModule } from './modules/songs/songs.module';
+import { AlbumsModule } from './modules/albums/albums.module';
+import { PlaylistsModule } from './modules/playlists/playlists.module';
 
 @Module({
   imports: [ConfigModule.forRoot({
     isGlobal: true
   }),
-    DatabaseModule
+    DatabaseModule,
+    UsersModule,
+    ArtistsModule,
+    SongsModule,
+    AlbumsModule,
+    PlaylistsModule
   ],
   controllers: [AppController],
   providers: [AppService],
