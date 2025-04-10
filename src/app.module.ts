@@ -8,6 +8,7 @@ import { ArtistsModule } from './modules/artists/artists.module';
 import { SongsModule } from './modules/songs/songs.module';
 import { AlbumsModule } from './modules/albums/albums.module';
 import { PlaylistsModule } from './modules/playlists/playlists.module';
+import { VideoModule } from './modules/video/video.module';
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -18,7 +19,8 @@ import { PlaylistsModule } from './modules/playlists/playlists.module';
     ArtistsModule,
     SongsModule,
     AlbumsModule,
-    PlaylistsModule
+    PlaylistsModule,
+    VideoModule
   ],
   controllers: [AppController],
   providers: [AppService],
