@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { User } from "./user.entity";
 import { Song } from "@/modules/songs/entities/song.entity";
 import { Video } from "@/modules/video/entities/video.entity";  
@@ -7,15 +7,18 @@ export class ListeningHistory {
     @PrimaryGeneratedColumn()
     history_id: number;
 
-   @ManyToOne(() => User , (user) => user.listeningHistories)
-   user: User;
+    @ManyToOne(() => User , (user) => user.listeningHistories)
+    @JoinColumn({ name: "user_id" })
+    user: User;
 
-   @ManyToOne(() => Song , (song) => song.listeningHistory)
-   song: Song;
+    @ManyToOne(() => Song , (song) => song.listeningHistory)
+    @JoinColumn({ name: "song_id" })
+    song: Song;
 
-   @ManyToOne(() => Video , (video) => video.listeningHistories)
+    @ManyToOne(() => Video , (video) => video.listeningHistories)
+    @JoinColumn({ name: "video_id" })
     video: Video;
 
-   @Column({type: "datetime", default: () => "CURRENT_TIMESTAMP"})
-   listened_at: Date;
+    @Column({type: "datetime", default: () => "CURRENT_TIMESTAMP"})
+    listened_at: Date;
 }

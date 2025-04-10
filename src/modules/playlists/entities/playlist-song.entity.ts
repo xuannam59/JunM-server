@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 import { Playlist } from "./playlist.entity";
 import { Song } from "@/modules/songs/entities/song.entity";
 
@@ -14,9 +14,11 @@ export class PlaylistSong {
     added_at: Date;
 
     @ManyToOne(() => Playlist, (playlist) => playlist.playlistSongs)
+    @JoinColumn({ name: "playlist_id" })    
     playlist: Playlist;
 
     @ManyToOne(() => Song, (song) => song.playlistSongs)
+    @JoinColumn({ name: "song_id" })
     song: Song;
 
 }

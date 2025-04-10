@@ -2,7 +2,7 @@ import { Album } from "@/modules/albums/entities/album.entity";
 import { Song } from "@/modules/songs/entities/song.entity";
 import { User } from "@/modules/users/entities/user.entity";
 import { Video } from "@/modules/video/entities/video.entity";
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Artist {
@@ -10,6 +10,7 @@ export class Artist {
     artist_id: number
 
     @ManyToOne(() => User, { nullable: true })
+    @JoinColumn({ name: "user_id" })
     users: User;
 
     @Column()

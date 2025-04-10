@@ -2,7 +2,7 @@ import { Album } from "@/modules/albums/entities/album.entity";
 import { Artist } from "@/modules/artists/entities/artist.entity";
 import { PlaylistSong } from "@/modules/playlists/entities/playlist-song.entity";
 import { ListeningHistory } from "@/modules/users/entities/listening-history.entity";
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Like } from "./like.entity";
 
 @Entity("songs")
@@ -26,9 +26,11 @@ export class Song {
     genre: string;
 
     @ManyToOne(() => Artist , (artist) => artist.songs)
+    @JoinColumn({ name: "artist_id" })
     artist: Artist;
 
     @ManyToOne(() => Album , (album) => album.songs)
+    @JoinColumn({ name: "album_id" })   
     album: Album;
 
     @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })

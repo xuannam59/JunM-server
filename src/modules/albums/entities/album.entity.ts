@@ -1,5 +1,6 @@
-import { Artist } from "@/modules/artists/entities/artist.entity";import { Song } from "@/modules/songs/entities/song.entity";
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Artist } from "@/modules/artists/entities/artist.entity";
+import { Song } from "@/modules/songs/entities/song.entity";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity("albums")
 export class Album {
@@ -10,6 +11,7 @@ export class Album {
     title: string;
 
     @ManyToOne(() => Artist, (artist) => artist.albums)
+    @JoinColumn({ name: "artist_id" })
     artist: Artist;
   
     @Column({nullable: true})
