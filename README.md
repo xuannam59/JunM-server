@@ -1,99 +1,169 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Web âm nhạc (JunM)
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Mô tả ngắn gọn về dự án : Đây là một ứng dụng backend được xây dựng bằng NestJS để quản lý người dùng và sản phẩm
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Mục lục
 
-## Description
+- [Giới thiệu](#giới-thiệu)
+- [Yêu cầu](#yêu-cầu)
+- [Cài đặt](#cài-đặt)
+- [Cách sử dụng](#cách-sử-dụng)
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Giới thiệu
 
-## Project setup
+Dự án này là một API RESTful được xây dựng bằng NestJS, tích hợp cơ sở dữ liệu Mysql để quản lý thông tin người dùng và sản phẩm. Nó hỗ trợ xác thực JWT và có thể mở rộng dễ dàng.
+
+## Yêu cầu
+
+- Node.js (phiên bản >= 18.x.x)
+- npm (phiên bản >= 9.x.x) hoặc Yarn
+- Nest CLI (tùy chọn)
+- Cơ sở dữ liệu: Mysql
+
+## Cài đặt
+
+1. **Clone repository:**
 
 ```bash
-$ yarn install
+git clone https://github.com/username/repository.git
+cd repository
 ```
 
-## Compile and run the project
+2. **Cài đặt dependencies**:
 
 ```bash
-# development
-$ yarn run start
-
-# watch mode
-$ yarn run start:dev
-
-# production mode
-$ yarn run start:prod
+  npm install
 ```
 
-## Run tests
+3. **Khởi động MySQL bằng Docker**:
 
 ```bash
-# unit tests
-$ yarn run test
-
-# e2e tests
-$ yarn run test:e2e
-
-# test coverage
-$ yarn run test:cov
+docker-compose up -d
 ```
 
-## Deployment
+## Cách sử dụng
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+1. **Cài đặt dependencies**
 
 ```bash
-$ yarn install -g mau
-$ mau deploy
+npm run dev
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+## Cấu trúc thư mục
 
-## Resources
+src/
+├── modules/ # Các module chính (user, product, auth, v.v.)
+├── common/ # Util, middleware, interceptor
+├── config/ # Cấu hình (database, env)
+├── migration/ # File migration
+└── main.ts # File khởi chạy ứng dụng# Tên Dự Án
 
-Check out a few resources that may come in handy when working with NestJS:
+Mô tả ngắn gọn về dự án của bạn (ví dụ: Đây là một ứng dụng backend được xây dựng bằng NestJS để quản lý người dùng và sản phẩm).
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+## Mục lục
 
-## Support
+- [Giới thiệu](#giới-thiệu)
+- [Yêu cầu](#yêu-cầu)
+- [Cài đặt](#cài-đặt)
+- [Cách sử dụng](#cách-sử-dụng)
+- [Cấu trúc thư mục](#cấu-trúc-thư-mục)
+- [API Endpoints](#api-endpoints)
+- [Góp ý](#góp-ý)
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## Giới thiệu
 
-## Stay in touch
+Dự án này là một API RESTful được xây dựng bằng NestJS, tích hợp cơ sở dữ liệu PostgreSQL để quản lý thông tin người dùng và sản phẩm. Nó hỗ trợ xác thực JWT và có thể mở rộng dễ dàng.
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+## Yêu cầu
 
-## License
+- Node.js (phiên bản >= 18.x.x)
+- npm (phiên bản >= 9.x.x) hoặc Yarn
+- Nest CLI (tùy chọn)
+- Cơ sở dữ liệu: PostgreSQL (hoặc thay bằng DB bạn dùng)
+- Biến môi trường: DATABASE_URL, JWT_SECRET, PORT
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+## Cài đặt
+
+1. **Clone repository:**
+
+```bash
+git clone https://github.com/username/repository.git
+cd repository
+```
+
+2. **Cài đặt dependencies**:
+
+```bash
+npm install
+```
+
+3. **Khởi động MySQL bằng Docker**:
+
+```bash
+docker-compose up -d
+```
+
+## Cách sử dụng
+
+1. **Cài đặt dependencies**
+
+```bash
+npm run dev
+```
+
+## Cấu trúc thư mục
+
+# Tên Dự Án
+
+Mô tả ngắn gọn về dự án của bạn (ví dụ: Đây là một ứng dụng backend được xây dựng bằng NestJS để quản lý người dùng và sản phẩm).
+
+## Mục lục
+
+- [Giới thiệu](#giới-thiệu)
+- [Yêu cầu](#yêu-cầu)
+- [Cài đặt](#cài-đặt)
+- [Cách sử dụng](#cách-sử-dụng)
+- [Cấu trúc thư mục](#cấu-trúc-thư-mục)
+- [API Endpoints](#api-endpoints)
+- [Góp ý](#góp-ý)
+
+## Giới thiệu
+
+Dự án này là một API RESTful được xây dựng bằng NestJS, tích hợp cơ sở dữ liệu PostgreSQL để quản lý thông tin người dùng và sản phẩm. Nó hỗ trợ xác thực JWT và có thể mở rộng dễ dàng.
+
+## Yêu cầu
+
+- Node.js (phiên bản >= 18.x.x)
+- npm (phiên bản >= 9.x.x) hoặc Yarn
+- Nest CLI (tùy chọn)
+- Cơ sở dữ liệu: PostgreSQL (hoặc thay bằng DB bạn dùng)
+- Biến môi trường: DATABASE_URL, JWT_SECRET, PORT
+
+## Cài đặt
+
+1. **Clone repository:**
+
+```bash
+git clone https://github.com/username/repository.git
+cd repository
+```
+
+2. **Cài đặt dependencies**:
+
+```bash
+  npm install
+```
+
+3. **Khởi động MySQL bằng Docker**:
+
+```bash
+docker-compose up -d
+```
+
+## Cách sử dụng
+
+1. **Cài đặt dependencies**
+
+```bash
+npm run dev
+```
