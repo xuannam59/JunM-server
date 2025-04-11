@@ -5,10 +5,10 @@ import { User } from "@/modules/users/entities/user.entity";
 @Entity('likes')
 export class Like {
     @PrimaryColumn()
-    user_id: number;
+    user_id: string;
 
     @PrimaryColumn()
-    song_id: number;  
+    song_id: string;  
      
     @Column({type: "datetime", default: () => "CURRENT_TIMESTAMP"})
     liked_at: Date;

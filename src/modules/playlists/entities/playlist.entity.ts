@@ -4,8 +4,8 @@ import { PlaylistSong } from "./playlist-song.entity";
 
 @Entity("playlists")
 export class Playlist {
-    @PrimaryGeneratedColumn()
-    playlist_id: number;
+    @PrimaryGeneratedColumn("uuid")
+    playlist_id: string;
 
     @ManyToOne(() => User, (user) => user.playlists, { nullable: false })
     @JoinColumn({ name: "user_id" })

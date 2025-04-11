@@ -4,8 +4,8 @@ import { Song } from "@/modules/songs/entities/song.entity";
 import { Video } from "@/modules/video/entities/video.entity";  
 @Entity("listening_histories")
 export class ListeningHistory {
-    @PrimaryGeneratedColumn()
-    history_id: number;
+    @PrimaryGeneratedColumn("uuid")
+    history_id: string;
 
     @ManyToOne(() => User , (user) => user.listeningHistories)
     @JoinColumn({ name: "user_id" })

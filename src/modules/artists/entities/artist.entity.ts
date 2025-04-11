@@ -6,8 +6,8 @@ import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColum
 
 @Entity()
 export class Artist {
-    @PrimaryGeneratedColumn()
-    artist_id: number
+    @PrimaryGeneratedColumn("uuid")
+    artist_id: string
 
     @ManyToOne(() => User, { nullable: true })
     @JoinColumn({ name: "user_id" })

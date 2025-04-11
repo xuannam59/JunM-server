@@ -7,8 +7,8 @@ import { Like } from "./like.entity";
 
 @Entity("songs")
 export class Song {
-    @PrimaryGeneratedColumn()
-    song_id: number;
+    @PrimaryGeneratedColumn("uuid")
+    song_id: string;
 
     @Column()
     title: string;

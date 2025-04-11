@@ -5,8 +5,8 @@ import { Like } from "@/modules/songs/entities/like.entity";
 
 @Entity("users")
 export class User {
-    @PrimaryGeneratedColumn()
-    user_id: number;
+    @PrimaryGeneratedColumn("uuid")
+    user_id: string;
 
     @Column({ unique: true })
     username: string;
@@ -20,6 +20,12 @@ export class User {
     @Column({ nullable: true })
     full_name: string;
 
+    @Column({ nullable: true })
+    avatar: string;
+
+    @Column({ nullable: true })
+    number_phone: string;
+    
     @Column({ default: "USER" })
     role: string
 

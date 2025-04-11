@@ -5,8 +5,8 @@ import { Column, Entity, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from "t
 
 @Entity("videos")
 export class Video {
-    @PrimaryGeneratedColumn()
-    video_id: number;
+    @PrimaryGeneratedColumn("uuid")
+    video_id: string;
     
     @Column()
     title: string;

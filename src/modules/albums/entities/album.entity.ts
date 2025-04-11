@@ -4,8 +4,8 @@ import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColum
 
 @Entity("albums")
 export class Album {
-    @PrimaryGeneratedColumn()
-    album_id: number;
+    @PrimaryGeneratedColumn("uuid")
+    album_id: string;
 
     @Column()
     title: string;

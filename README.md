@@ -32,7 +32,7 @@ cd repository
 2. **Cài đặt dependencies**:
 
 ```bash
-  npm install
+npm install
 ```
 
 3. **Khởi động MySQL bằng Docker**:

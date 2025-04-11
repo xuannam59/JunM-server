@@ -5,10 +5,10 @@ import { Song } from "@/modules/songs/entities/song.entity";
 @Entity("playlist_songs")
 export class PlaylistSong {
     @PrimaryColumn()
-    playlist_id: number;
+    playlist_id: string;    
 
     @PrimaryColumn()
-    song_id: number;
+    song_id: string;
 
     @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
     added_at: Date;

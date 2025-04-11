@@ -1,12 +1,17 @@
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import { TransformInterceptor } from './configs/transform.interceptor';
-import { join } from 'path';
+import { VersioningType } from '@nestjs/common';
+import { ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   const reflector = app.get(Reflector);
+
+  // ConfigService
+  const configService = app.get(ConfigService);
 
   // Config CORS
   app.enableCors({
@@ -14,9 +19,19 @@ async function bootstrap() {
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     preflightContinue: false,
   });
+  
+  // Config ValidationPipe
+  app.useGlobalPipes(new ValidationPipe({
+    whitelist: true,
+    transform: true,
+  }));
 
-  // ConfigService
-  const configService = app.get(ConfigService);
+  // Config prefix version
+  app.setGlobalPrefix('api');
+  app.enableVersioning({
+    type: VersioningType.URI,
+    defaultVersion: ["1"],
+  });
 
   // Config TransformInterceptor
   app.useGlobalInterceptors(new TransformInterceptor(reflector));
