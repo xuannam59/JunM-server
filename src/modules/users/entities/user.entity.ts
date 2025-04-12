@@ -52,4 +52,8 @@ export class User {
 
     @OneToMany(() => Like, (like) => like.user, { nullable: true })
     likes: Like[];
+
+    constructor(user: Partial<User>) {
+        Object.assign(this, user)
+    }
 }

@@ -44,16 +44,24 @@ export class UsersService {
 
     const hashPassword = await hashPasswordHelper(password);
 
-    const user = this.userRepository.create({
+    const user = new User({
       username,
       email,
       password_hash: hashPassword,
     });
 
     await this.userRepository.save(user);
-
     delete user.password_hash;
 
+    return user;
+  }
+
+  async findByEmail(email: string) {
+    const user = await this.userRepository.findOne({
+      where: {
+        email,
+      }
+    });
     return user;
   }
 }

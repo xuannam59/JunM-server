@@ -5,6 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import { TransformInterceptor } from './configs/transform.interceptor';
 import { VersioningType } from '@nestjs/common';
 import { ValidationPipe } from '@nestjs/common';
+import { JwtAuthGuard } from './auth/jwt-auth.guard';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
@@ -19,7 +20,7 @@ async function bootstrap() {
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     preflightContinue: false,
   });
-  
+
   // Config ValidationPipe
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true,
@@ -35,6 +36,9 @@ async function bootstrap() {
 
   // Config TransformInterceptor
   app.useGlobalInterceptors(new TransformInterceptor(reflector));
+
+  // Config JWT
+  app.useGlobalGuards(new JwtAuthGuard(reflector));
 
   await app.listen(configService.get<string>("PORT") ?? 8000);
 }

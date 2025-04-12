@@ -33,4 +33,8 @@ export class Artist {
 
     @OneToMany(() => Video, (video) => video.artist)
     videos: Video[];
+
+    constructor(artist: Partial<Artist>) {
+        Object.assign(this, artist)
+    }
 }
