@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { UsersService } from '@/modules/users/users.service';
 import { compare } from 'bcrypt';
 import { AuthRegisterDto } from './dto/request-auth.dto';
@@ -34,7 +34,7 @@ export class AuthService {
     };
   }
 
-  login(user: IUser, res: Response) {
+  async login(user: IUser, res: Response) {
     const { user_id, email, username, role, avatar, number_phone } = user;
     const payload = {
       sub: "token access",
@@ -52,6 +52,8 @@ export class AuthService {
       httpOnly: true,
       maxAge: ms(this.configService.get<StringValue>("JWT_REFRESH_EXPIRE"))
     });
+
+    await this.usersService.updateRefreshToken(user_id, refresh_token);
 
     return {
       access_token,
@@ -72,5 +74,67 @@ export class AuthService {
       expiresIn: this.configService.get<string>("JWT_REFRESH_EXPIRE")
     });
     return refresh_token
+  }
+
+  async getAccount(user: IUser) {
+    const { user_id, email, username, role, avatar, number_phone } = user
+
+    return {
+      user_id, email,
+      username, role,
+      avatar, number_phone
+    }
+  }
+
+  async processRefreshToken(refreshToken: string, res: Response) {
+    try {
+      this.jwtService.verify(refreshToken, {
+        secret: this.configService.get<string>("JWT_REFRESH_TOKEN_SECRET")
+      });
+
+      const user = await this.usersService.findByRefreshToken(refreshToken);
+      if (!user) {
+        res.clearCookie("refresh_token");
+        throw new BadRequestException("Refresh token is invalid. Please login again");
+      }
+      const { user_id, email, username, role, avatar, number_phone } = user;
+      const payload = {
+        sub: "token access",
+        iss: "from server",
+        user_id,
+        email,
+        username,
+        role
+      };
+      const access_token = this.jwtService.sign(payload);
+      const refresh_token = this.createRefreshToken(payload);
+
+      res.cookie("refresh_token", refresh_token, {
+        httpOnly: true,
+        maxAge: ms(this.configService.get<StringValue>("JWT_REFRESH_EXPIRE"))
+      });
+
+      await this.usersService.updateRefreshToken(user_id, refresh_token);
+      return {
+        access_token,
+        user: {
+          user_id,
+          email,
+          username,
+          role,
+          avatar,
+          number_phone
+        }
+      };
+
+    } catch (error) {
+      throw new BadRequestException("Invalid refresh token");
+    }
+  }
+
+  async logout(user: IUser, res: Response) {
+    await this.usersService.updateRefreshToken(user.user_id, null);
+    res.clearCookie("refresh_token");
+    return "Logout successfully";
   }
 }

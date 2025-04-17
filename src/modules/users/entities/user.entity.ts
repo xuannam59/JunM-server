@@ -25,15 +25,15 @@ export class User {
 
     @Column({ nullable: true })
     number_phone: string;
-    
+
     @Column({ default: "USER" })
     role: string
 
-    @Column({ nullable: true })
+    @Column({ type: "varchar", nullable: true, length: 500 })
     refresh_token: string;
 
     @Column({ type: "boolean", default: false })
-    is_blocked: boolean
+    is_blocked: boolean;
 
     @Column({ type: "datetime", nullable: true })
     blocked_at: Date;

@@ -1,11 +1,10 @@
-import { Controller, Post, Body, UseGuards, Req, Res } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Req, Res, Get } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthRegisterDto } from './dto/request-auth.dto';
-import { AuthGuard } from '@nestjs/passport';
 import { LocalAuthGuard } from './local-auth.guard';
 import { Public, User } from '@/decorators/customize';
 import { IUser } from '@/interfaces/user.interface';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 @Controller('auths')
 export class AuthController {
   constructor(private readonly authService: AuthService) { }
@@ -25,4 +24,30 @@ export class AuthController {
   ) {
     return this.authService.login(user, res);
   }
+
+  @Get('account')
+  getAccount(
+    @User() user: IUser,
+  ) {
+    return this.authService.getAccount(user);
+  }
+
+  @Public()
+  @Post("refresh-token")
+  processRefreshToken(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response
+  ) {
+    const refreshToken = req.cookies["refresh_token"];
+    return this.authService.processRefreshToken(refreshToken, res);
+  }
+
+  @Post("logout")
+  logout(
+    @User() user: IUser,
+    @Res({ passthrough: true }) res: Response
+  ) {
+    return this.authService.logout(user, res);
+  }
+
 }

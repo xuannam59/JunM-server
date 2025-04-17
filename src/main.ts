@@ -6,6 +6,7 @@ import { TransformInterceptor } from './configs/transform.interceptor';
 import { VersioningType } from '@nestjs/common';
 import { ValidationPipe } from '@nestjs/common';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
+import cookieParser from 'cookie-parser';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
@@ -20,6 +21,9 @@ async function bootstrap() {
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     preflightContinue: false,
   });
+
+  // use cookieParser
+  app.use(cookieParser());
 
   // Config ValidationPipe
   app.useGlobalPipes(new ValidationPipe({

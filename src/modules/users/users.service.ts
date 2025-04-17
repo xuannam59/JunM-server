@@ -8,7 +8,7 @@ import { User } from './entities/user.entity';
 import { hashPasswordHelper } from '@/helpers/hash.helper';
 @Injectable()
 export class UsersService {
-  constructor(@InjectRepository(User) private userRepository: Repository<User>) {}
+  constructor(@InjectRepository(User) private userRepository: Repository<User>) { }
 
   create(createUserDto: CreateUserDto) {
     return 'This action adds a new user';
@@ -32,7 +32,7 @@ export class UsersService {
 
   async register(registerDto: AuthRegisterDto) {
     const { username, email, password, confirmPassword } = registerDto;
-    
+
     const exist = await this.userRepository.findOne({
       where: {
         email,
@@ -40,7 +40,7 @@ export class UsersService {
     });
 
     if (exist) throw new BadRequestException('Email already exists');
-    if(password !== confirmPassword) throw new BadRequestException('Password and confirm password do not match');
+    if (password !== confirmPassword) throw new BadRequestException('Password and confirm password do not match');
 
     const hashPassword = await hashPasswordHelper(password);
 
@@ -63,5 +63,21 @@ export class UsersService {
       }
     });
     return user;
+  }
+
+  async findByRefreshToken(refresh_token: string) {
+    const user = await this.userRepository.findOne({
+      where: {
+        refresh_token
+      }
+    });
+
+    return user;
+  }
+
+  async updateRefreshToken(user_id: string, refresh_token: string) {
+    await this.userRepository.update(user_id, {
+      refresh_token
+    })
   }
 }
