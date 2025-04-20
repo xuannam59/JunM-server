@@ -7,34 +7,37 @@ import { Column, Entity, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from "t
 export class Video {
     @PrimaryGeneratedColumn("uuid")
     video_id: string;
-    
+
     @Column()
     title: string;
 
-    @ManyToOne(() => Song , {nullable: true})
+    @ManyToOne(() => Song, { nullable: true })
     song: Song;
 
-    @ManyToOne(() => Artist , (artist) => artist.videos)
+    @ManyToOne(() => Artist, (artist) => artist.videos)
     artist: Artist;
-    
+
     @Column()
     file_url: string;
 
     @Column()
     duration: number;
 
-    @Column({type: "date", nullable: true})
+    @Column({ type: "date", nullable: true })
     release_date: Date;
-    
-    @Column()
-    view_count: number;   
 
-    @Column({type: "datetime", default: () => "CURRENT_TIMESTAMP"})
+    @Column()
+    view_count: number;
+
+    @Column()
+    posted_by: string;
+
+    @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
     created_at: Date;
 
-    @Column({type: "datetime", default: () => "CURRENT_TIMESTAMP"})
+    @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
     updated_at: Date;
 
-    @ManyToMany(() => ListeningHistory , (listeningHistory) => listeningHistory.video)
+    @ManyToMany(() => ListeningHistory, (listeningHistory) => listeningHistory.video)
     listeningHistories: ListeningHistory[];
 }

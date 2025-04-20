@@ -5,6 +5,7 @@ import { LocalAuthGuard } from './local-auth.guard';
 import { Public, User } from '@/decorators/customize';
 import { IUser } from '@/interfaces/user.interface';
 import { Request, Response } from 'express';
+import { GoogleOauthGuard } from './google-oauth.guard';
 @Controller('auths')
 export class AuthController {
   constructor(private readonly authService: AuthService) { }
@@ -50,4 +51,15 @@ export class AuthController {
     return this.authService.logout(user, res);
   }
 
+  @Public()
+  @Get('google/login')
+  @UseGuards(GoogleOauthGuard)
+  async googleAuth(@Req() _req) { }
+
+  @Public()
+  @Get('google/callback')
+  @UseGuards(GoogleOauthGuard)
+  async googleAuthCallback(@User() user: IUser, @Res() res: Response) {
+    return this.authService.loginByGoogle(user, res);
+  }
 }

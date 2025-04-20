@@ -25,6 +25,9 @@ export class Artist {
     @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP", onUpdate: "CURRENT_TIMESTAMP" })
     updated_at: Date;
 
+    @Column()
+    posted_by: string;
+
     @OneToMany(() => Song, (song) => song.artist)
     songs: Song[];
 

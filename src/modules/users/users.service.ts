@@ -6,6 +6,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { hashPasswordHelper } from '@/helpers/hash.helper';
+import { IGoogleUser } from '@/interfaces/user.interface';
+import { generateRandomString } from '@/helpers/generate.helper';
 @Injectable()
 export class UsersService {
   constructor(@InjectRepository(User) private userRepository: Repository<User>) { }
@@ -79,5 +81,20 @@ export class UsersService {
     await this.userRepository.update(user_id, {
       refresh_token
     })
+  }
+
+  async findOrCreateUser(googleUser: IGoogleUser) {
+    const { google_id, email, full_name, avatar } = googleUser;
+    const existUser = await this.userRepository.findOne({
+      where: {
+        email
+      }
+    });
+    if (!existUser) {
+      const password_hash = await hashPasswordHelper(generateRandomString(9));
+      const newUser = new User({ google_id, email, full_name, avatar, password_hash });
+      return this.userRepository.save(newUser);
+    }
+    return existUser;
   }
 }

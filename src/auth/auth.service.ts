@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { UsersService } from '@/modules/users/users.service';
 import { compare } from 'bcrypt';
 import { AuthRegisterDto } from './dto/request-auth.dto';
-import { IUser } from '@/interfaces/user.interface';
+import { IGoogleUser, IUser } from '@/interfaces/user.interface';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
@@ -25,6 +25,11 @@ export class AuthService {
       }
     }
     return null;
+  }
+
+  async validateGoogleUser(googleUser: IGoogleUser): Promise<any> {
+    const user = await this.usersService.findOrCreateUser(googleUser);
+    return user; // Trả về user để sử dụng trong phiên
   }
 
   async register(authRegisterDto: AuthRegisterDto) {
@@ -136,5 +141,30 @@ export class AuthService {
     await this.usersService.updateRefreshToken(user.user_id, null);
     res.clearCookie("refresh_token");
     return "Logout successfully";
+  }
+
+  async loginByGoogle(user: IUser, res: Response) {
+    const { user_id, email, username, role } = user;
+    const payload = {
+      sub: "token access",
+      iss: "from server",
+      user_id,
+      email,
+      username,
+      role
+    }
+
+    const access_token = this.jwtService.sign(payload);
+    const refresh_token = this.createRefreshToken(payload);
+
+    res.cookie("refresh_token", refresh_token, {
+      httpOnly: true,
+      maxAge: ms(this.configService.get<StringValue>("JWT_REFRESH_EXPIRE"))
+    });
+
+    await this.usersService.updateRefreshToken(user_id, refresh_token);
+
+    const frontendUrl = this.configService.get<string>("URL_FE");
+    res.redirect(`${frontendUrl}?access_token=${access_token}`)
   }
 }

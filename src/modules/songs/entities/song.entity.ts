@@ -25,26 +25,29 @@ export class Song {
     @Column({ nullable: true })
     genre: string;
 
-    @ManyToOne(() => Artist , (artist) => artist.songs)
+    @ManyToOne(() => Artist, (artist) => artist.songs)
     @JoinColumn({ name: "artist_id" })
     artist: Artist;
 
-    @ManyToOne(() => Album , (album) => album.songs)
-    @JoinColumn({ name: "album_id" })   
+    @ManyToOne(() => Album, (album) => album.songs)
+    @JoinColumn({ name: "album_id" })
     album: Album;
 
     @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
     created_at: Date;
+
+    @Column({ nullable: true })
+    posted_by: string;
 
     @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP", onUpdate: "CURRENT_TIMESTAMP" })
     updated_at: Date;
 
     @OneToMany(() => Like, (like) => like.song)
     likes: Like[];
-  
+
     @OneToMany(() => PlaylistSong, (playlistSong) => playlistSong.song)
     playlistSongs: PlaylistSong[];
-  
+
     @OneToMany(() => ListeningHistory, (listeningHistory) => listeningHistory.song)
     listeningHistory: ListeningHistory[];
 }
