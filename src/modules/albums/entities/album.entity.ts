@@ -13,12 +13,15 @@ export class Album {
     @ManyToOne(() => Artist, (artist) => artist.albums)
     @JoinColumn({ name: "artist_id" })
     artist: Artist;
-  
-    @Column({nullable: true})
+
+    @Column({ nullable: true })
     cover_url: string;
 
     @Column({ type: "date", nullable: true })
     release_date: Date;
+
+    @Column()
+    slug: string;
 
     @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
     created_at: Date;

@@ -17,6 +17,9 @@ export class Playlist {
     @Column({ default: false })
     is_public: boolean;
 
+    @Column()
+    slug: string
+
     @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
     created_at: Date;
 

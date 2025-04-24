@@ -8,58 +8,58 @@ import { Request, Response } from 'express';
 import { GoogleOauthGuard } from './google-oauth.guard';
 @Controller('auths')
 export class AuthController {
-  constructor(private readonly authService: AuthService) { }
+    constructor(private readonly authService: AuthService) { }
 
-  @Public()
-  @Post('register')
-  register(@Body() authRegisterDto: AuthRegisterDto) {
-    return this.authService.register(authRegisterDto);
-  }
+    @Public()
+    @Post('register')
+    register(@Body() authRegisterDto: AuthRegisterDto) {
+        return this.authService.register(authRegisterDto);
+    }
 
-  @Public()
-  @UseGuards(LocalAuthGuard)
-  @Post('login')
-  login(
-    @User() user: IUser,
-    @Res({ passthrough: true }) res: Response
-  ) {
-    return this.authService.login(user, res);
-  }
+    @Public()
+    @UseGuards(LocalAuthGuard)
+    @Post('login')
+    login(
+        @User() user: IUser,
+        @Res({ passthrough: true }) res: Response
+    ) {
+        return this.authService.login(user, res);
+    }
 
-  @Get('account')
-  getAccount(
-    @User() user: IUser,
-  ) {
-    return this.authService.getAccount(user);
-  }
+    @Get('account')
+    getAccount(
+        @User() user: IUser,
+    ) {
+        return this.authService.getAccount(user.user_id);
+    }
 
-  @Public()
-  @Post("refresh-token")
-  processRefreshToken(
-    @Req() req: Request,
-    @Res({ passthrough: true }) res: Response
-  ) {
-    const refreshToken = req.cookies["refresh_token"];
-    return this.authService.processRefreshToken(refreshToken, res);
-  }
+    @Public()
+    @Post("refresh-token")
+    processRefreshToken(
+        @Req() req: Request,
+        @Res({ passthrough: true }) res: Response
+    ) {
+        const refreshToken = req.cookies["refresh_token"];
+        return this.authService.processRefreshToken(refreshToken, res);
+    }
 
-  @Post("logout")
-  logout(
-    @User() user: IUser,
-    @Res({ passthrough: true }) res: Response
-  ) {
-    return this.authService.logout(user, res);
-  }
+    @Post("logout")
+    logout(
+        @User() user: IUser,
+        @Res({ passthrough: true }) res: Response
+    ) {
+        return this.authService.logout(user, res);
+    }
 
-  @Public()
-  @Get('google/login')
-  @UseGuards(GoogleOauthGuard)
-  async googleAuth(@Req() _req) { }
+    @Public()
+    @Get('google/login')
+    @UseGuards(GoogleOauthGuard)
+    async googleAuth(@Req() _req) { }
 
-  @Public()
-  @Get('google/callback')
-  @UseGuards(GoogleOauthGuard)
-  async googleAuthCallback(@User() user: IUser, @Res() res: Response) {
-    return this.authService.loginByGoogle(user, res);
-  }
+    @Public()
+    @Get('google/callback')
+    @UseGuards(GoogleOauthGuard)
+    async googleAuthCallback(@User() user: IUser, @Res() res: Response) {
+        return this.authService.loginByGoogle(user, res);
+    }
 }

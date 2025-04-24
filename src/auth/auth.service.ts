@@ -17,7 +17,7 @@ export class AuthService {
   ) { }
 
   async validateUser(email: string, password: string): Promise<any> {
-    const user = await this.usersService.findByEmail(email);
+    const user = await this.usersService.findUserBy({ email });
     if (user) {
       const isPasswordValid = await compare(password, user.password_hash);
       if (isPasswordValid) {
@@ -40,7 +40,7 @@ export class AuthService {
   }
 
   async login(user: IUser, res: Response) {
-    const { user_id, email, username, role, avatar, number_phone } = user;
+    const { user_id, email, username, role, avatar, number_phone, full_name } = user;
     const payload = {
       sub: "token access",
       iss: "from server",
@@ -63,12 +63,9 @@ export class AuthService {
     return {
       access_token,
       user: {
-        user_id,
-        email,
-        username,
-        role,
-        avatar,
-        number_phone
+        user_id, full_name,
+        email, username, role,
+        avatar, number_phone,
       }
     };
   }
@@ -81,12 +78,12 @@ export class AuthService {
     return refresh_token
   }
 
-  async getAccount(user: IUser) {
-    const { user_id, email, username, role, avatar, number_phone } = user
-
+  async getAccount(userId: string) {
+    const user = await this.usersService.findUserBy({ user_id: userId });
+    const { user_id, email, username, role, avatar, number_phone, full_name, google_id } = user;
     return {
-      user_id, email,
-      username, role,
+      user_id, email, full_name,
+      username, role, google_id,
       avatar, number_phone
     }
   }
@@ -97,12 +94,12 @@ export class AuthService {
         secret: this.configService.get<string>("JWT_REFRESH_TOKEN_SECRET")
       });
 
-      const user = await this.usersService.findByRefreshToken(refreshToken);
+      const user = await this.usersService.findUserBy({ refresh_token: refreshToken });
       if (!user) {
         res.clearCookie("refresh_token");
         throw new BadRequestException("Refresh token is invalid. Please login again");
       }
-      const { user_id, email, username, role, avatar, number_phone } = user;
+      const { user_id, email, username, role, avatar, number_phone, google_id, full_name } = user;
       const payload = {
         sub: "token access",
         iss: "from server",
@@ -123,12 +120,9 @@ export class AuthService {
       return {
         access_token,
         user: {
-          user_id,
-          email,
-          username,
-          role,
-          avatar,
-          number_phone
+          user_id, email, full_name,
+          username, role, avatar,
+          number_phone, google_id,
         }
       };
 
@@ -165,6 +159,6 @@ export class AuthService {
     await this.usersService.updateRefreshToken(user_id, refresh_token);
 
     const frontendUrl = this.configService.get<string>("URL_FE");
-    res.redirect(`${frontendUrl}?access_token=${access_token}`)
+    res.redirect(`${frontendUrl}/google/${access_token}`)
   }
 }

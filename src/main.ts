@@ -17,9 +17,10 @@ async function bootstrap() {
 
   // Config CORS
   app.enableCors({
-    origin: "*",
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
-    preflightContinue: false,
+    "origin": true,
+    "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
+    "preflightContinue": false,
+    credentials: true
   });
 
   // use cookieParser

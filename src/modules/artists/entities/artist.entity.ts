@@ -28,6 +28,9 @@ export class Artist {
     @Column()
     posted_by: string;
 
+    @Column()
+    slug: string;
+
     @OneToMany(() => Song, (song) => song.artist)
     songs: Song[];
 

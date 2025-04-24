@@ -33,6 +33,9 @@ export class Song {
     @JoinColumn({ name: "album_id" })
     album: Album;
 
+    @Column()
+    slug: string
+
     @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
     created_at: Date;
 

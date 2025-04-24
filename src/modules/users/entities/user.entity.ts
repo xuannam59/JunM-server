@@ -36,6 +36,12 @@ export class User {
     refresh_token: string;
 
     @Column({ type: "boolean", default: false })
+    is_deleted: boolean;
+
+    @Column({ type: "datetime", nullable: true })
+    deleted_at: Date;
+
+    @Column({ type: "boolean", default: false })
     is_blocked: boolean;
 
     @Column({ type: "datetime", nullable: true })
