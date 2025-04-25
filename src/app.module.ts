@@ -10,6 +10,7 @@ import { AlbumsModule } from './modules/albums/albums.module';
 import { PlaylistsModule } from './modules/playlists/playlists.module';
 import { VideoModule } from './modules/video/video.module';
 import { AuthModule } from './auth/auth.module';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -22,7 +23,8 @@ import { AuthModule } from './auth/auth.module';
     AlbumsModule,
     PlaylistsModule,
     VideoModule,
-    AuthModule
+    AuthModule,
+    CloudinaryModule,
   ],
   controllers: [AppController],
   providers: [AppService],

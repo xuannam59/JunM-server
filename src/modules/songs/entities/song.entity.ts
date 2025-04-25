@@ -33,14 +33,17 @@ export class Song {
     @JoinColumn({ name: "album_id" })
     album: Album;
 
+    @Column({ type: "nvarchar", length: 1000 })
+    lyrics: string;
+
     @Column()
     slug: string
 
-    @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
-    created_at: Date;
-
     @Column({ nullable: true })
     posted_by: string;
+
+    @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
+    created_at: Date;
 
     @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP", onUpdate: "CURRENT_TIMESTAMP" })
     updated_at: Date;
