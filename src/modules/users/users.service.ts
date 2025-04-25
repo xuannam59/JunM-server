@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { AuthRegisterDto } from '@/auth/dto/request-auth.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { hashPasswordHelper } from '@/helpers/hash.helper';
 import { IGoogleUser } from '@/interfaces/user.interface';
@@ -12,46 +12,50 @@ export class UsersService {
     constructor(@InjectRepository(User) private userRepository: Repository<User>) { }
 
     async findAll(query: Record<string, string>) {
-        let filter = {}
-        let order: 'ASC' | 'DESC' = "ASC";
-        let column = "created_at";
-        if (query.sort) {
-            if (query.sort.startsWith("-")) {
-                order = "DESC";
-                column = query.sort.substring(1);
-            } else {
-                column = query.sort;
-            }
+        const params = new URLSearchParams(query);
+        const current = +params.get('current') || 1;
+        const pageSize = +params.get('pageSize') || 10;
+        const skip = (current - 1) * pageSize;
+        const sort = params.get('sort') || '-created_at';
+        const searchText = params.get('search') || '';
+
+        const column = sort.startsWith('-') ? sort.slice(1) : sort;
+        const order = sort.startsWith('-') ? 'DESC' : 'ASC';
+
+
+        let filter: any = { is_deleted: false }
+
+        if (searchText) {
+            const searchFields = ['username', 'full_name', 'email'];
+            filter = searchFields.map(field => ({
+                [field]: Like(`%${searchText}%`),
+                is_deleted: false
+            }));
         }
-        const defaultCurrent = query.current ?? 1;
-        const defaultPageSize = query.pageSize ?? 10;
-
-        const totalItems = await this.userRepository.count(filter);
-        const skip = (+defaultCurrent - 1) * +defaultPageSize;
-
 
         const users = await this.userRepository.find({
             where: filter,
-            take: +defaultPageSize,
+            take: pageSize,
             skip,
             order: {
-                role: "ASC",
-                [column]: order
+                role: 'ASC',
+                [column]: order,
             },
             select: ["user_id", "username", "email", "avatar",
                 "full_name", "number_phone", "role", "google_id",
                 "is_blocked", "blocked_at", "is_deleted",
-                "created_at", "updated_at", "deleted_at"
-            ]
+                "created_at", "updated_at", "deleted_at"]
         })
+
+        const totalItems = await this.userRepository.count({ where: filter });
 
         return {
             meta: {
-                current: defaultCurrent,
-                pageSize: defaultPageSize,
+                current: current,
+                pageSize: pageSize,
                 totalItems
             },
-            result: users.map(({ password_hash, ...rest }) => rest)
+            result: users
         }
     }
 
