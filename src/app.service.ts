@@ -1,4 +1,4 @@
-import { BadGatewayException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadGatewayException, Injectable } from '@nestjs/common';
 import { CloudinaryService } from './cloudinary/cloudinary.service';
 
 @Injectable()
@@ -23,11 +23,10 @@ export class AppService {
   }
 
   // [DELETE]
-  async deleteFile(publicId: string) {
+  async deleteFile(fileUrl: string) {
     try {
-      const result = await this.cloudinaryService.deleteFile(publicId);
+      const result = await this.cloudinaryService.deleteFile(fileUrl);
       return {
-        message: "Delete file successfully",
         result,
       };
     } catch (error) {

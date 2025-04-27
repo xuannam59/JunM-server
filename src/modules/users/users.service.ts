@@ -59,7 +59,6 @@ export class UsersService {
         }
     }
 
-
     async updateUser(user_id: string, updateUserDto: UpdateUserDto) {
         const { username, full_name, avatar, number_phone, role, is_blocked } = updateUserDto
 

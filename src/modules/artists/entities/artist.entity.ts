@@ -1,23 +1,25 @@
 import { Album } from "@/modules/albums/entities/album.entity";
 import { Song } from "@/modules/songs/entities/song.entity";
-import { User } from "@/modules/users/entities/user.entity";
 import { Video } from "@/modules/video/entities/video.entity";
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Follow } from "./follow.entity";
 
 @Entity()
 export class Artist {
     @PrimaryGeneratedColumn("uuid")
     artist_id: string
 
-    @ManyToOne(() => User, { nullable: true })
-    @JoinColumn({ name: "user_id" })
-    users: User;
-
     @Column()
     artist_name: string;
 
     @Column({ nullable: true })
-    avatar_url: string;
+    avatar: string;
+
+    @Column()
+    posted_by: string;
+
+    @Column()
+    slug: string;
 
     @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
     created_at: Date;
@@ -25,11 +27,8 @@ export class Artist {
     @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP", onUpdate: "CURRENT_TIMESTAMP" })
     updated_at: Date;
 
-    @Column()
-    posted_by: string;
-
-    @Column()
-    slug: string;
+    @OneToMany(() => Follow, (follow) => follow.artist)
+    follows: Follow[];
 
     @OneToMany(() => Song, (song) => song.artist)
     songs: Song[];

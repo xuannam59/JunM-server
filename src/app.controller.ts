@@ -1,7 +1,7 @@
-import { Body, Controller, Delete, Get, HttpStatus, ParseFilePipeBuilder, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, ParseFilePipeBuilder, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { AppService } from './app.service';
 import { ResponseMessage } from './decorators/customize';
-import { FileInterceptor } from '@nestjs/platform-express';
 @Controller()
 export class AppController {
     constructor(private readonly appService: AppService) { }
@@ -33,9 +33,9 @@ export class AppController {
         return this.appService.uploadFile(file, folderName);
     }
 
-    @Delete('file/delete')
+    @Post('file/delete')
     @ResponseMessage("Delete file")
-    deleteFile(@Body('publicId') publicId: string) {
-        return this.appService.deleteFile(publicId);
+    deleteFile(@Body('fileUrl') fileUrl: string) {
+        return this.appService.deleteFile(fileUrl);
     }
 }
