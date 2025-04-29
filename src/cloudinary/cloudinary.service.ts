@@ -14,13 +14,12 @@ export class CloudinaryService {
         const uniqueFilename = `${replaceSlug(originalName)}-${Date.now()}`;
 
         const resourceType = detectResourceType(file.mimetype);
-
         return new Promise<UploadApiResponse | UploadApiErrorResponse>((resolve, reject) => {
             const uploadStream = cloudinary.uploader.upload_stream({
                 folder: folderName ?? "default",
                 public_id: uniqueFilename,
                 resource_type: resourceType,
-                transformation: getTransformations(resourceType),
+                transformation: getTransformations(resourceType, file.mimetype),
             },
                 (error, result) => {
                     if (error) return reject(error);

@@ -7,9 +7,13 @@ import { User } from './entities/user.entity';
 import { hashPasswordHelper } from '@/helpers/hash.helper';
 import { IGoogleUser } from '@/interfaces/user.interface';
 import { generateRandomString } from '@/helpers/generate.helper';
+import { CloudinaryService } from '@/cloudinary/cloudinary.service';
 @Injectable()
 export class UsersService {
-    constructor(@InjectRepository(User) private userRepository: Repository<User>) { }
+    constructor(
+        @InjectRepository(User) private userRepository: Repository<User>,
+        private readonly cloudinaryService: CloudinaryService
+    ) { }
 
     async findAll(query: Record<string, string>) {
         const params = new URLSearchParams(query);
@@ -62,17 +66,25 @@ export class UsersService {
     async updateUser(user_id: string, updateUserDto: UpdateUserDto) {
         const { username, full_name, avatar, number_phone, role, is_blocked } = updateUserDto
 
-        const result = await this.userRepository.update(
+        const existUser = await this.userRepository.findOne({
+            where: {
+                user_id
+            }
+        });
+
+        if (!existUser) throw new BadRequestException("Not found user!");
+
+        if (avatar !== existUser.avatar) {
+            this.cloudinaryService.deleteFile(existUser.avatar);
+        }
+
+        await this.userRepository.update(
             { user_id },
             {
                 username, full_name, avatar,
                 number_phone, role, is_blocked
             }
-        )
-
-        if (result.affected === 0) {
-            throw new BadRequestException("Not found user!");
-        }
+        );
 
         return "Update user successfully!";
     }

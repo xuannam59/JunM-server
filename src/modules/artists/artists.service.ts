@@ -44,7 +44,7 @@ export class ArtistsService {
             filter.slug = Like(`%${searchText}%`);
         }
 
-        const users = await this.artistRepository.find({
+        const artists = await this.artistRepository.find({
             where: filter,
             take: pageSize,
             skip,
@@ -67,22 +67,30 @@ export class ArtistsService {
                 pageSize: pageSize,
                 totalItems
             },
-            result: users
+            result: artists
         }
     }
 
     async update(id: string, updateArtistDto: UpdateArtistDto) {
-        const result = await this.artistRepository.update(
+        const artist = await this.artistRepository.findOne({
+            where: { artist_id: id },
+        });
+
+        if (!artist) {
+            throw new BadRequestException("Artist not found");
+        }
+
+        if (artist.avatar && updateArtistDto.avatar) {
+            this.cloudinaryService.deleteFile(artist.avatar);
+        }
+
+        await this.artistRepository.update(
             { artist_id: id },
             {
                 ...updateArtistDto,
                 slug: replaceSlug(updateArtistDto.artist_name)
             }
         )
-
-        if (result.affected === 0) {
-            throw new BadRequestException("Artist not found");
-        }
 
         return "Artist updated successfully"
     }

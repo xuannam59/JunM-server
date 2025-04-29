@@ -13,34 +13,52 @@ export class Song {
     @Column()
     title: string;
 
-    @Column({ nullable: true })
-    duration: number;
-
     @Column()
     file_url: string;
+
+    @Column()
+    thumbnail_url: string;
+
+    @Column({ nullable: true, default: 0 })
+    views: number;
+
+    @Column({ nullable: true })
+    durations: number;
 
     @Column({ type: "date", nullable: true })
     release_date: Date;
 
+    @Column({ type: "nvarchar", length: 5000 })
+    lyrics: string;
+
     @Column({ nullable: true })
     genre: string;
+
+    @Column({ name: "artist_id" })
+    artist_id: string;
 
     @ManyToOne(() => Artist, (artist) => artist.songs)
     @JoinColumn({ name: "artist_id" })
     artist: Artist;
 
-    @ManyToOne(() => Album, (album) => album.songs)
+    @Column({ name: "album_id", nullable: true })
+    album_id: string;
+
+    @ManyToOne(() => Album, (album) => album.songs, { nullable: true })
     @JoinColumn({ name: "album_id" })
     album: Album;
-
-    @Column({ type: "nvarchar", length: 1000 })
-    lyrics: string;
 
     @Column()
     slug: string
 
     @Column({ nullable: true })
     posted_by: string;
+
+    @Column({ default: false })
+    is_deleted: boolean;
+
+    @Column({ type: "datetime", nullable: true })
+    deleted_at: Date;
 
     @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
     created_at: Date;
@@ -56,4 +74,8 @@ export class Song {
 
     @OneToMany(() => ListeningHistory, (listeningHistory) => listeningHistory.song)
     listeningHistory: ListeningHistory[];
+
+    constructor(partial: Partial<Song>) {
+        Object.assign(this, partial);
+    }
 }

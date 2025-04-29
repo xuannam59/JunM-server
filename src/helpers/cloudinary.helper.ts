@@ -19,31 +19,44 @@ export const detectResourceTypeFromUrl = (url: string): 'image' | 'video' | 'raw
 };
 
 
-export const detectResourceType = (mimeType: string): 'image' | 'video' | 'auto' => {
+export const detectResourceType = (mimeType: string): 'image' | 'video' | 'raw' => {
     if (mimeType.startsWith('image/')) return 'image';
     if (mimeType.startsWith('video/')) return 'video';
-    if (mimeType.startsWith('audio/')) return 'video'; // Cloudinary xử lý audio như video
-    return 'auto';
-}
+    if (mimeType.startsWith('audio/')) return 'video';
+    return 'raw';
+};
 
-export const getTransformations = (resourceType: string) => {
+export const getTransformations = (resourceType: string, mimeType: string) => {
     if (resourceType === 'image') {
         return [
-            { crop: 'scale' },
             { fetch_format: 'auto' },
-            { quality: 'auto' },
+            { quality: 'auto:good' },
+            { crop: 'scale' },
         ];
     }
 
     if (resourceType === 'video') {
+        const isAudio = mimeType.startsWith('audio/');
+
+        if (isAudio) {
+            return [
+                { fetch_format: 'auto' }
+            ];
+        }
+
         return [
             { fetch_format: 'auto' },
-            { quality: 'auto' },
+            { quality: 'auto:good' },
             { video_codec: 'auto' },
             { audio_codec: 'aac' },
-            { width: 1280, crop: 'limit' }, // Scale video/audio nếu quá lớn
+            { width: 1280, crop: 'limit' },
         ];
     }
 
-    return undefined;
+    if (resourceType === 'raw') {
+        return [
+            { fetch_format: 'auto' }
+        ];
+    }
+    return [];
 }

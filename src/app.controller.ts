@@ -19,7 +19,8 @@ export class AppController {
         @UploadedFile(
             new ParseFilePipeBuilder()
                 .addFileTypeValidator({
-                    fileType: /^(jpg|jpeg|image\/jpeg|png|image\/png|gif|txt|pdf|application\/pdf|doc|docx|application\/msword|text\/plain|)$/i,
+                    fileType: /^image\/(jpeg|png|gif|webp)$|^video\/(mp4|webm|ogg)$|^audio\/(mpeg|mp3|wav|ogg)$|^application\/(pdf|msword)$|^text\/plain$/i,
+
                 })
                 .addMaxSizeValidator({
                     maxSize: 10 * 1024 * 1024, // 10MB
