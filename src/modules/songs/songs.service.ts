@@ -31,17 +31,27 @@ export class SongsService {
     const current = +params.get('current') || 1;
     const pageSize = +params.get('pageSize') || 10;
     const skip = (current - 1) * pageSize;
-    const sort = params.get('sort') || '-release_date';
+    const sort = params.get('sort') || '-created_at';
     const searchText = params.get('search') || '';
+    const artist_id = params.get('artist_id') || '';
+    const genre = params.get('genre') || '';
 
     const column = sort.startsWith('-') ? sort.slice(1) : sort;
     const order = sort.startsWith('-') ? 'DESC' : 'ASC';
 
 
-    let filter: any = { is_deleted: false };
+    let filter: any = {};
 
     if (searchText) {
       filter.slug = Like(`%${searchText}%`);
+    }
+
+    if (artist_id) {
+      filter.artist_id = artist_id;
+    }
+
+    if (genre) {
+      filter.genre = genre;
     }
 
     const songs = await this.songRepository.find({

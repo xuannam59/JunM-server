@@ -20,7 +20,7 @@ export class Song {
     thumbnail_url: string;
 
     @Column({ nullable: true, default: 0 })
-    views: number;
+    listens: number;
 
     @Column({ nullable: true })
     durations: number;

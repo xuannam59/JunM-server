@@ -1,7 +1,7 @@
 import { Artist } from "@/modules/artists/entities/artist.entity";
 import { ListeningHistory } from "@/modules/users/entities/listening-history.entity";
 import { Song } from "@/modules/songs/entities/song.entity";
-import { Column, Entity, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity("videos")
 export class Video {
@@ -11,26 +11,23 @@ export class Video {
     @Column()
     title: string;
 
-    @ManyToOne(() => Song, { nullable: true })
-    song: Song;
+    @Column({ name: "song_id" })
+    song_id: string;
 
-    @ManyToOne(() => Artist, (artist) => artist.videos)
-    artist: Artist;
-
-    @Column()
-    file_url: string;
+    @Column({ name: "artist_id" })
+    artist_id: string;
 
     @Column()
-    duration: number;
+    video_url: string;
 
     @Column({ type: "date", nullable: true })
     release_date: Date;
 
     @Column()
-    view_count: number;
+    posted_by: string;
 
     @Column()
-    posted_by: string;
+    slug: string;
 
     @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
     created_at: Date;
@@ -38,6 +35,18 @@ export class Video {
     @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
     updated_at: Date;
 
+    @ManyToOne(() => Song, { nullable: true })
+    @JoinColumn({ name: "song_id" })
+    song: Song;
+
+    @ManyToOne(() => Artist, (artist) => artist.videos)
+    @JoinColumn({ name: "artist_id" })
+    artist: Artist;
+
     @ManyToMany(() => ListeningHistory, (listeningHistory) => listeningHistory.video)
     listeningHistories: ListeningHistory[];
+
+    constructor(partial: Partial<Video>) {
+        Object.assign(this, partial);
+    }
 }
