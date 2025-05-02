@@ -6,7 +6,6 @@ import { DatabaseModule } from './configs/database.module';
 import { UsersModule } from './modules/users/users.module';
 import { ArtistsModule } from './modules/artists/artists.module';
 import { SongsModule } from './modules/songs/songs.module';
-import { AlbumsModule } from './modules/albums/albums.module';
 import { PlaylistsModule } from './modules/playlists/playlists.module';
 import { VideoModule } from './modules/video/video.module';
 import { AuthModule } from './auth/auth.module';
@@ -20,7 +19,6 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
     UsersModule,
     ArtistsModule,
     SongsModule,
-    AlbumsModule,
     PlaylistsModule,
     VideoModule,
     AuthModule,

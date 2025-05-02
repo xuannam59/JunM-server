@@ -54,7 +54,6 @@ export class ArtistsService {
             relations: {
                 follows: true,
                 songs: true,
-                albums: true,
                 videos: true,
             }
         })

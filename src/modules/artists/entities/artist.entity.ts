@@ -1,4 +1,3 @@
-import { Album } from "@/modules/albums/entities/album.entity";
 import { Song } from "@/modules/songs/entities/song.entity";
 import { Video } from "@/modules/video/entities/video.entity";
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
@@ -32,9 +31,6 @@ export class Artist {
 
     @OneToMany(() => Song, (song) => song.artist)
     songs: Song[];
-
-    @OneToMany(() => Album, (album) => album.artist)
-    albums: Album[];
 
     @OneToMany(() => Video, (video) => video.artist)
     videos: Video[];

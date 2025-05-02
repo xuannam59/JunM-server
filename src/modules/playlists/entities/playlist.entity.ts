@@ -7,6 +7,9 @@ export class Playlist {
     @PrimaryGeneratedColumn("uuid")
     playlist_id: string;
 
+    @Column({ name: "user_id" })
+    user_id: string;
+
     @ManyToOne(() => User, (user) => user.playlists, { nullable: false })
     @JoinColumn({ name: "user_id" })
     user: User;
@@ -28,4 +31,9 @@ export class Playlist {
 
     @OneToMany(() => PlaylistSong, (playlistSong) => playlistSong.playlist, { nullable: true })
     playlistSongs: PlaylistSong[];
+
+    constructor(partial: Partial<Playlist>) {
+        Object.assign(this, partial);
+    }
+
 }

@@ -1,4 +1,3 @@
-import { Album } from "@/modules/albums/entities/album.entity";
 import { Artist } from "@/modules/artists/entities/artist.entity";
 import { PlaylistSong } from "@/modules/playlists/entities/playlist-song.entity";
 import { ListeningHistory } from "@/modules/users/entities/listening-history.entity";
@@ -40,13 +39,6 @@ export class Song {
     @ManyToOne(() => Artist, (artist) => artist.songs)
     @JoinColumn({ name: "artist_id" })
     artist: Artist;
-
-    @Column({ name: "album_id", nullable: true })
-    album_id: string;
-
-    @ManyToOne(() => Album, (album) => album.songs, { nullable: true })
-    @JoinColumn({ name: "album_id" })
-    album: Album;
 
     @Column()
     slug: string

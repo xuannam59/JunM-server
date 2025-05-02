@@ -24,7 +24,4 @@ export class CreateSongDto {
 
     @IsNotEmpty()
     artist_id: string
-
-    @IsOptional()
-    album_id: string
 }

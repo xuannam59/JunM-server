@@ -1,34 +1,40 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { PlaylistsService } from './playlists.service';
 import { CreatePlaylistDto } from './dto/create-playlist.dto';
 import { UpdatePlaylistDto } from './dto/update-playlist.dto';
+import { Public, ResponseMessage, User } from '@/decorators/customize';
+import { IUser } from '@/interfaces/user.interface';
 
 @Controller('playlists')
 export class PlaylistsController {
-  constructor(private readonly playlistsService: PlaylistsService) {}
+  constructor(private readonly playlistsService: PlaylistsService) { }
 
-  @Post()
-  create(@Body() createPlaylistDto: CreatePlaylistDto) {
-    return this.playlistsService.create(createPlaylistDto);
+  @Post("create")
+  @ResponseMessage("Playlist created successfully")
+  create(
+    @Body() createPlaylistDto: CreatePlaylistDto,
+    @User() user: IUser
+  ) {
+    return this.playlistsService.create(createPlaylistDto, user);
   }
 
-  @Get()
-  findAll() {
-    return this.playlistsService.findAll();
+  @Get("all")
+  @Public()
+  findAll(
+    @Query() query: Record<string, string>,
+  ) {
+    return this.playlistsService.findAll(query);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.playlistsService.findOne(+id);
-  }
-
-  @Patch(':id')
+  @Patch('update/:id')
+  @ResponseMessage("Playlist updated successfully")
   update(@Param('id') id: string, @Body() updatePlaylistDto: UpdatePlaylistDto) {
-    return this.playlistsService.update(+id, updatePlaylistDto);
+    return this.playlistsService.update(id, updatePlaylistDto);
   }
 
-  @Delete(':id')
+  @Delete('delete/:id')
+  @ResponseMessage("Playlist deleted successfully")
   remove(@Param('id') id: string) {
-    return this.playlistsService.remove(+id);
+    return this.playlistsService.remove(id);
   }
 }

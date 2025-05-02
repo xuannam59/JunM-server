@@ -64,7 +64,6 @@ export class SongsService {
       relations: {
         likes: true,
         artist: true,
-        album: true,
       }
     })
 
