@@ -1,7 +1,9 @@
 # Web âm nhạc (JunM)
 
 Mô tả ngắn gọn về dự án : Đây là một ứng dụng backend được xây dựng bằng NestJS để quản lý người dùng và sản phẩm
-
+```bash
+FE: https://github.com/xuannam59/JunM-Web
+```
 ## Mục lục
 
 - [Giới thiệu](#giới-thiệu)
