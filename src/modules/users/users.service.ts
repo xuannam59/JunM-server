@@ -8,10 +8,13 @@ import { hashPasswordHelper } from '@/helpers/hash.helper';
 import { IGoogleUser } from '@/interfaces/user.interface';
 import { generateRandomString } from '@/helpers/generate.helper';
 import { CloudinaryService } from '@/cloudinary/cloudinary.service';
+import { ListeningHistory } from './entities/listening-history.entity';
+import { CreateListeningHistoryDto } from './dto/create-listening-history.dto';
 @Injectable()
 export class UsersService {
     constructor(
         @InjectRepository(User) private userRepository: Repository<User>,
+        @InjectRepository(ListeningHistory) private listeningHistoryRepository: Repository<ListeningHistory>,
         private readonly cloudinaryService: CloudinaryService
     ) { }
 
@@ -133,7 +136,10 @@ export class UsersService {
 
     async findUserBy(criteria: { email?: string, refresh_token?: string, user_id?: string }) {
         const user = await this.userRepository.findOne({
-            where: criteria
+            where: criteria,
+            relations: {
+                listeningHistories: true
+            }
         });
 
         return user;
@@ -158,5 +164,50 @@ export class UsersService {
             return this.userRepository.save(newUser);
         }
         return existUser;
+    }
+
+    async createListeningHistory(data: CreateListeningHistoryDto) {
+        const { user_id, song_id, video_id } = data;
+
+        const user = await this.userRepository.findOne({
+            where: {
+                user_id
+            }
+        });
+
+        if (!user) throw new BadRequestException("Not found user!");
+
+        const listeningHistory = new ListeningHistory({
+            user_id,
+            song_id,
+            video_id,
+            listened_at: new Date()
+        });
+
+        await this.listeningHistoryRepository.save(listeningHistory);
+
+        return "Create listening history successfully!";
+    }
+
+    async getListeningHistory(user_id: string, query: string) {
+        const params = new URLSearchParams(query);
+
+        const pageSize = +params.get('pageSize') || 10;
+
+        const listenHistory = await this.listeningHistoryRepository.find({
+            where: {
+                user_id
+            },
+            take: pageSize,
+            order: {
+                listened_at: 'DESC'
+            },
+            relations: {
+                song: true,
+                video: true
+            }
+        });
+
+        return listenHistory;
     }
 }

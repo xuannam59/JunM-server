@@ -1,24 +1,37 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { User } from "./user.entity";
 import { Song } from "@/modules/songs/entities/song.entity";
-import { Video } from "@/modules/video/entities/video.entity";  
+import { Video } from "@/modules/video/entities/video.entity";
 @Entity("listening_histories")
 export class ListeningHistory {
     @PrimaryGeneratedColumn("uuid")
     history_id: string;
 
-    @ManyToOne(() => User , (user) => user.listeningHistories)
+    @Column({ name: "user_id" })
+    user_id: string;
+
+    @Column({ name: "song_id", nullable: true })
+    song_id: string;
+
+    @Column({ name: "video_id", nullable: true })
+    video_id: string;
+
+    @ManyToOne(() => User, (user) => user.listeningHistories)
     @JoinColumn({ name: "user_id" })
     user: User;
 
-    @ManyToOne(() => Song , (song) => song.listeningHistory)
+    @ManyToOne(() => Song, (song) => song.listeningHistory)
     @JoinColumn({ name: "song_id" })
     song: Song;
 
-    @ManyToOne(() => Video , (video) => video.listeningHistories)
+    @ManyToOne(() => Video, (video) => video.listeningHistories)
     @JoinColumn({ name: "video_id" })
     video: Video;
 
-    @Column({type: "datetime", default: () => "CURRENT_TIMESTAMP"})
+    @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
     listened_at: Date;
+
+    constructor(partial: Partial<ListeningHistory>) {
+        Object.assign(this, partial);
+    }
 }

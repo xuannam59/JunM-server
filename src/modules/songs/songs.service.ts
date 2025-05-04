@@ -28,6 +28,7 @@ export class SongsService {
 
   async findAll(query: Record<string, string>) {
     const params = new URLSearchParams(query);
+
     const current = +params.get('current') || 1;
     const pageSize = +params.get('pageSize') || 10;
     const skip = (current - 1) * pageSize;
@@ -35,6 +36,7 @@ export class SongsService {
     const searchText = params.get('search') || '';
     const artist_id = params.get('artist_id') || '';
     const genre = params.get('genre') || '';
+    const random = params.get('random') === "true";
 
     const column = sort.startsWith('-') ? sort.slice(1) : sort;
     const order = sort.startsWith('-') ? 'DESC' : 'ASC';
@@ -54,20 +56,22 @@ export class SongsService {
       filter.genre = genre;
     }
 
-    const songs = await this.songRepository.find({
-      where: filter,
-      take: pageSize,
-      skip,
-      order: {
-        [column]: order,
-      },
-      relations: {
-        likes: true,
-        artist: true,
-      }
-    })
+    const queryBuilder = this.songRepository
+      .createQueryBuilder('song')
+      .leftJoinAndSelect('song.artist', 'artist')
+      .leftJoinAndSelect('song.likes', 'likes')
+      .where(filter)
 
-    const totalItems = await this.songRepository.count({ where: filter });
+    if (random) {
+      queryBuilder.orderBy('RAND()').take(pageSize);
+    } else {
+      queryBuilder.orderBy(`song.${column}`, order).skip(skip).take(pageSize);
+    }
+
+    const [songs, totalItems] = await Promise.all([
+      queryBuilder.getMany(),
+      this.songRepository.count({ where: filter }),
+    ]);
 
     return {
       meta: {

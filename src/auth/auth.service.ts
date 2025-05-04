@@ -40,7 +40,7 @@ export class AuthService {
   }
 
   async login(user: IUser, res: Response) {
-    const { user_id, email, username, role, avatar, number_phone, full_name } = user;
+    const { user_id, email, username, role, avatar, number_phone, full_name, listeningHistories } = user;
     const payload = {
       sub: "token access",
       iss: "from server",
@@ -65,7 +65,7 @@ export class AuthService {
       user: {
         user_id, full_name,
         email, username, role,
-        avatar, number_phone,
+        avatar, number_phone, listeningHistories
       }
     };
   }
@@ -80,11 +80,11 @@ export class AuthService {
 
   async getAccount(userId: string) {
     const user = await this.usersService.findUserBy({ user_id: userId });
-    const { user_id, email, username, role, avatar, number_phone, full_name, google_id } = user;
+    const { user_id, email, username, role, avatar, number_phone, full_name, google_id, listeningHistories } = user;
     return {
       user_id, email, full_name,
       username, role, google_id,
-      avatar, number_phone
+      avatar, number_phone, listeningHistories
     }
   }
 
