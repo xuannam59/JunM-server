@@ -13,7 +13,7 @@ export class Follow {
     @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
     follow_at: Date;
 
-    @ManyToOne(() => User, (user) => user.likes)
+    @ManyToOne(() => User, (user) => user.follows)
     @JoinColumn({ name: "user_id" })
     user: User;
 

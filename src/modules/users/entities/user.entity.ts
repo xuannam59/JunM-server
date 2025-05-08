@@ -2,6 +2,7 @@ import { Playlist } from "@/modules/playlists/entities/playlist.entity";
 import { ListeningHistory } from "./listening-history.entity";
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Like } from "@/modules/songs/entities/like.entity";
+import { Follow } from "@/modules/artists/entities/follow.entity";
 
 @Entity("users")
 export class User {
@@ -55,6 +56,10 @@ export class User {
 
     @OneToMany(() => Playlist, (playlist) => playlist.user, { nullable: true })
     playlists: Playlist[];
+
+    @OneToMany(() => Follow, (follow) => follow.user)
+    follows: Follow[];
+
 
     @OneToMany(() => ListeningHistory, (listeningHistory) => listeningHistory.user, { nullable: true })
     listeningHistories: ListeningHistory[];

@@ -10,11 +10,13 @@ import { generateRandomString } from '@/helpers/generate.helper';
 import { CloudinaryService } from '@/cloudinary/cloudinary.service';
 import { ListeningHistory } from './entities/listening-history.entity';
 import { CreateListeningHistoryDto } from './dto/create-listening-history.dto';
+import { Song } from '../songs/entities/song.entity';
 @Injectable()
 export class UsersService {
     constructor(
         @InjectRepository(User) private userRepository: Repository<User>,
         @InjectRepository(ListeningHistory) private listeningHistoryRepository: Repository<ListeningHistory>,
+        @InjectRepository(Song) private songRepository: Repository<Song>,
         private readonly cloudinaryService: CloudinaryService
     ) { }
 
@@ -175,16 +177,30 @@ export class UsersService {
             }
         });
 
-        if (!user) throw new BadRequestException("Not found user!");
+        if (user) {
+            const existHistory = await this.listeningHistoryRepository.findOne({
+                where: {
+                    user_id,
+                    song_id: song_id || null,
+                    video_id: video_id || null
+                }
+            });
 
-        const listeningHistory = new ListeningHistory({
-            user_id,
-            song_id,
-            video_id,
-            listened_at: new Date()
-        });
+            if (!existHistory) {
+                const listeningHistory = new ListeningHistory({
+                    user_id,
+                    song_id: song_id || null,
+                    video_id: video_id || null,
+                    listened_at: new Date()
+                });
+                await this.listeningHistoryRepository.save(listeningHistory);
+            } else {
+                await this.listeningHistoryRepository.update({ user_id, song_id, video_id },
+                    { listened_at: new Date() })
+            }
+        }
 
-        await this.listeningHistoryRepository.save(listeningHistory);
+        await this.songRepository.increment({ song_id }, 'listens', 1);
 
         return "Create listening history successfully!";
     }
@@ -203,8 +219,13 @@ export class UsersService {
                 listened_at: 'DESC'
             },
             relations: {
-                song: true,
-                video: true
+                song: {
+                    likes: true,
+                    artist: true
+                },
+                video: {
+                    artist: true
+                }
             }
         });
 

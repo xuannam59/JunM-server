@@ -1,9 +1,10 @@
-import { Controller, Get, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Body, Patch, Param, Delete, Query, Post } from '@nestjs/common';
 import { UsersService } from './users.service';
 
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ResponseMessage, User } from '@/decorators/customize';
+import { Public, ResponseMessage, User } from '@/decorators/customize';
 import { IUser } from '@/interfaces/user.interface';
+import { CreateListeningHistoryDto } from './dto/create-listening-history.dto';
 
 @Controller('users')
 export class UsersController {
@@ -26,7 +27,16 @@ export class UsersController {
     return this.usersService.removeUser(id);
   }
 
-  @Get("listening-history")
+  @Post("listening-history/create")
+  @Public()
+  @ResponseMessage("Create Listening History")
+  createListeningHistory(
+    @Body() createListeningHistoryDto: CreateListeningHistoryDto
+  ) {
+    return this.usersService.createListeningHistory(createListeningHistoryDto);
+  }
+
+  @Get("listening-history/all")
   @ResponseMessage("Get Listening History")
   getListeningHistory(
     @Query() query: string,

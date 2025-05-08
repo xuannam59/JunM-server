@@ -8,16 +8,20 @@ export class Like {
     user_id: string;
 
     @PrimaryColumn()
-    song_id: string;  
-     
-    @Column({type: "datetime", default: () => "CURRENT_TIMESTAMP"})
+    song_id: string;
+
+    @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
     liked_at: Date;
 
-    @ManyToOne(() => User , (user) => user.likes)
+    @ManyToOne(() => User, (user) => user.likes)
     @JoinColumn({ name: "user_id" })
     user: User;
 
-    @ManyToOne(() => Song , (song) => song.likes)
+    @ManyToOne(() => Song, (song) => song.likes)
     @JoinColumn({ name: "song_id" })
     song: Song;
+
+    constructor(partial: Partial<Like>) {
+        Object.assign(this, partial);
+    }
 }
