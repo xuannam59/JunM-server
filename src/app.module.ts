@@ -10,12 +10,14 @@ import { PlaylistsModule } from './modules/playlists/playlists.module';
 import { VideoModule } from './modules/video/video.module';
 import { AuthModule } from './auth/auth.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { CacheRedisModule } from './configs/cashe.module';
 
 @Module({
   imports: [ConfigModule.forRoot({
     isGlobal: true
   }),
     DatabaseModule,
+    CacheRedisModule,
     UsersModule,
     ArtistsModule,
     SongsModule,

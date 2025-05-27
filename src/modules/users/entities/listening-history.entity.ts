@@ -16,6 +16,9 @@ export class ListeningHistory {
     @Column({ name: "video_id", nullable: true })
     video_id: string;
 
+    @Column({ default: 1 })
+    count_listened: number;
+
     @ManyToOne(() => User, (user) => user.listeningHistories)
     @JoinColumn({ name: "user_id" })
     user: User;
@@ -30,6 +33,9 @@ export class ListeningHistory {
 
     @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
     listened_at: Date;
+
+    @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP", onUpdate: "CURRENT_TIMESTAMP" })
+    updated_at: Date;
 
     constructor(partial: Partial<ListeningHistory>) {
         Object.assign(this, partial);

@@ -190,13 +190,11 @@ export class UsersService {
                 const listeningHistory = new ListeningHistory({
                     user_id,
                     song_id: song_id || null,
-                    video_id: video_id || null,
-                    listened_at: new Date()
+                    video_id: video_id || null
                 });
                 await this.listeningHistoryRepository.save(listeningHistory);
             } else {
-                await this.listeningHistoryRepository.update({ user_id, song_id, video_id },
-                    { listened_at: new Date() })
+                await this.listeningHistoryRepository.increment({ song_id, user_id }, 'count_listened', 1);
             }
         }
 
@@ -209,15 +207,20 @@ export class UsersService {
         const params = new URLSearchParams(query);
 
         const pageSize = +params.get('pageSize') || 10;
+        const skip = +params.get('skip') || 0;
 
+        const totalItems = await this.listeningHistoryRepository.count({
+            where: {
+                user_id
+            }
+        });
         const listenHistory = await this.listeningHistoryRepository.find({
             where: {
                 user_id
             },
             take: pageSize,
-            order: {
-                listened_at: 'DESC'
-            },
+            skip,
+            order: { updated_at: 'DESC' },
             relations: {
                 song: {
                     likes: true,
@@ -228,7 +231,11 @@ export class UsersService {
                 }
             }
         });
-
-        return listenHistory;
+        return {
+            meta: {
+                totalItems
+            },
+            result: listenHistory
+        };
     }
 }

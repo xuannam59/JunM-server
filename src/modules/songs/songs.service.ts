@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { CreateSongDto } from './dto/create-song.dto';
 import { UpdateSongDto } from './dto/update-song.dto';
 import { IUser } from '@/interfaces/user.interface';
@@ -8,13 +8,16 @@ import { Like, Repository } from 'typeorm';
 import { CloudinaryService } from '@/cloudinary/cloudinary.service';
 import { replaceSlug } from '@/helpers/replaceSlug.helper';
 import * as LikeSong from './entities/like.entity';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class SongsService {
     constructor(
         @InjectRepository(Song) private songRepository: Repository<Song>,
         @InjectRepository(Like) private likeRepository: Repository<LikeSong.Like>,
-        private readonly cloudinaryService: CloudinaryService
+        @Inject(CACHE_MANAGER) private cacheManager: Cache,
+        private readonly cloudinaryService: CloudinaryService,
     ) { }
 
     async create(createSongDto: CreateSongDto, user: IUser) {
@@ -30,6 +33,14 @@ export class SongsService {
 
 
     async findDetail(song_id: string) {
+        const cacheKey = `song:${song_id}`;
+
+        // Kiểm tra cache
+        const cachedSongs = await this.cacheManager.get(cacheKey);
+        if (cachedSongs) {
+            return cachedSongs;
+        }
+
         const song = await this.songRepository.findOne({
             where: { song_id },
             relations: {
@@ -38,6 +49,8 @@ export class SongsService {
             }
         });
         if (!song) throw new BadRequestException('Song not found');
+
+        await this.cacheManager.set(cacheKey, song);
         return song;
     }
 
