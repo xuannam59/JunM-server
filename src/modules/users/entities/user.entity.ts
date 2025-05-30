@@ -18,7 +18,7 @@ export class User {
     @Column({ nullable: true })
     google_id: string
 
-    @Column()
+    @Column({ select: false })
     password_hash: string;
 
     @Column({ nullable: true })
@@ -33,7 +33,7 @@ export class User {
     @Column({ default: "USER" })
     role: string
 
-    @Column({ type: "varchar", nullable: true, length: 500 })
+    @Column({ type: "varchar", nullable: true, length: 500, select: false })
     refresh_token: string;
 
     @Column({ type: "boolean", default: false })

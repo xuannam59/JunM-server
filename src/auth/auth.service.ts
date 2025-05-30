@@ -53,7 +53,7 @@ export class AuthService {
     const access_token = this.jwtService.sign(payload);
     const refresh_token = this.createRefreshToken(payload);
 
-    res.cookie("refresh_token", refresh_token, {
+    res.cookie("junm_refresh_token", refresh_token, {
       httpOnly: true,
       maxAge: ms(this.configService.get<StringValue>("JWT_REFRESH_EXPIRE"))
     });
@@ -96,7 +96,7 @@ export class AuthService {
 
       const user = await this.usersService.findUserBy({ refresh_token: refreshToken });
       if (!user) {
-        res.clearCookie("refresh_token");
+        res.clearCookie("junm_refresh_token");
         throw new BadRequestException("Refresh token is invalid. Please login again");
       }
       const { user_id, email, username, role, avatar, number_phone, google_id, full_name } = user;
@@ -111,7 +111,7 @@ export class AuthService {
       const access_token = this.jwtService.sign(payload);
       const refresh_token = this.createRefreshToken(payload);
 
-      res.cookie("refresh_token", refresh_token, {
+      res.cookie("junm_refresh_token", refresh_token, {
         httpOnly: true,
         maxAge: ms(this.configService.get<StringValue>("JWT_REFRESH_EXPIRE"))
       });
@@ -133,7 +133,7 @@ export class AuthService {
 
   async logout(user: IUser, res: Response) {
     await this.usersService.updateRefreshToken(user.user_id, null);
-    res.clearCookie("refresh_token");
+    res.clearCookie("junm_refresh_token");
     return "Logout successfully";
   }
 
@@ -151,7 +151,7 @@ export class AuthService {
     const access_token = this.jwtService.sign(payload);
     const refresh_token = this.createRefreshToken(payload);
 
-    res.cookie("refresh_token", refresh_token, {
+    res.cookie("junm_refresh_token", refresh_token, {
       httpOnly: true,
       maxAge: ms(this.configService.get<StringValue>("JWT_REFRESH_EXPIRE"))
     });

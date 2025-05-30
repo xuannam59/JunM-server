@@ -32,6 +32,14 @@ export class SongsController {
         return this.songsService.findAll(query);
     }
 
+    @Get('favorite')
+    @ResponseMessage("Get favorite songs")
+    findFavoriteSongs(
+        @Query() query: Record<string, string>
+    ) {
+        return this.songsService.findFavoriteSongs(query);
+    }
+
 
     @Patch('update/:id')
     @ResponseMessage("Update song")

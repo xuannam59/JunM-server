@@ -39,7 +39,7 @@ export class AuthController {
         @Req() req: Request,
         @Res({ passthrough: true }) res: Response
     ) {
-        const refreshToken = req.cookies["refresh_token"];
+        const refreshToken = req.cookies["junm_refresh_token"];
         return this.authService.processRefreshToken(refreshToken, res);
     }
 

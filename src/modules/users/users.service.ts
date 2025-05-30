@@ -49,11 +49,7 @@ export class UsersService {
             order: {
                 role: 'ASC',
                 [column]: order,
-            },
-            select: ["user_id", "username", "email", "avatar",
-                "full_name", "number_phone", "role", "google_id",
-                "is_blocked", "blocked_at", "is_deleted",
-                "created_at", "updated_at", "deleted_at"]
+            }
         })
 
         const totalItems = await this.userRepository.count({ where: filter });
@@ -131,7 +127,6 @@ export class UsersService {
         });
 
         await this.userRepository.save(user);
-        delete user.password_hash;
 
         return user;
     }
@@ -141,6 +136,16 @@ export class UsersService {
             where: criteria,
             relations: {
                 listeningHistories: true
+            },
+            select: {
+                user_id: true,
+                username: true,
+                email: true,
+                full_name: true,
+                avatar: true,
+                password_hash: true,
+                number_phone: true,
+                role: true
             }
         });
 

@@ -50,10 +50,10 @@ export class PlaylistsService {
         const skip = (current - 1) * pageSize;
         const sort = params.get('sort') || '-created_at';
         const searchText = params.get('search') || '';
+        const user_id = params.get('user_id') || '';
 
         const column = sort.startsWith('-') ? sort.slice(1) : sort;
         const order = sort.startsWith('-') ? 'DESC' : 'ASC';
-
 
         let filter: any = {};
 
@@ -61,7 +61,9 @@ export class PlaylistsService {
             filter.slug = Like(`%${searchText}%`);
         }
 
-
+        if (user_id) {
+            filter.user_id = user_id;
+        }
 
         const songs = await this.playlistRepository.find({
             where: filter,

@@ -31,15 +31,14 @@ export class SongsService {
         return newSong;
     }
 
-
     async findDetail(song_id: string) {
-        const cacheKey = `song:${song_id}`;
+        // const cacheKey = `song:${song_id}`;
 
-        // Kiểm tra cache
-        const cachedSongs = await this.cacheManager.get(cacheKey);
-        if (cachedSongs) {
-            return cachedSongs;
-        }
+        // // Kiểm tra cache
+        // const cachedSongs = await this.cacheManager.get(cacheKey);
+        // if (cachedSongs) {
+        //     return cachedSongs;
+        // }
 
         const song = await this.songRepository.findOne({
             where: { song_id },
@@ -50,7 +49,7 @@ export class SongsService {
         });
         if (!song) throw new BadRequestException('Song not found');
 
-        await this.cacheManager.set(cacheKey, song);
+        // await this.cacheManager.set(cacheKey, song, 60 * 60 * 1000);
         return song;
     }
 
@@ -111,6 +110,31 @@ export class SongsService {
         }
     }
 
+    async findFavoriteSongs(query: Record<string, string>) {
+        const params = new URLSearchParams(query);
+        const skip = +params.get('skip') || 0;
+        const user_id = params.get('user_id') || '';
+
+        const queryBuilder = this.likeRepository
+            .createQueryBuilder('like')
+            .leftJoinAndSelect('like.song', 'song')
+            .leftJoinAndSelect('song.artist', 'artist')
+            .orderBy('like.liked_at', 'DESC')
+            .offset(skip)
+            .limit(10)
+            .where({ user_id });
+
+        const [likes, totalItems] = await Promise.all([
+            queryBuilder.getMany(),
+            this.likeRepository.count({ where: { user_id } }),
+        ]);
+
+        return {
+            meta: { totalItems },
+            result: likes.map(like => like.song)
+        };
+    }
+
     async update(id: string, updateSongDto: UpdateSongDto) {
         const song = await this.songRepository.findOne({
             where: { song_id: id },
@@ -153,17 +177,18 @@ export class SongsService {
     }
 
     async toggleLike(user_id: string, song_id: string) {
-        const song = await this.songRepository.findOne({
-            where: { song_id },
-            relations: {
-                likes: true
-            }
-        });
+        const song = await this.songRepository.exists({ where: { song_id } });
 
         if (!song) throw new BadRequestException('Song not found');
 
-        const existLike = song.likes.find(like => like.user_id === user_id);
-        if (existLike) {
+        const likeExists = await this.likeRepository.exists({
+            where: {
+                user_id,
+                song_id
+            }
+        });
+
+        if (likeExists) {
             await this.likeRepository.delete({
                 user_id,
                 song_id
