@@ -76,6 +76,7 @@ export class PlaylistsService {
                 playlistSongs: {
                     song: {
                         artist: true,
+                        likes: true
                     },
                 },
                 user: true

@@ -4,7 +4,7 @@ import { UpdateSongDto } from './dto/update-song.dto';
 import { IUser } from '@/interfaces/user.interface';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Song } from './entities/song.entity';
-import { Like, Repository } from 'typeorm';
+import { In, Like, Repository } from 'typeorm';
 import { CloudinaryService } from '@/cloudinary/cloudinary.service';
 import { replaceSlug } from '@/helpers/replaceSlug.helper';
 import * as LikeSong from './entities/like.entity';
@@ -15,7 +15,7 @@ import { Cache } from 'cache-manager';
 export class SongsService {
     constructor(
         @InjectRepository(Song) private songRepository: Repository<Song>,
-        @InjectRepository(Like) private likeRepository: Repository<LikeSong.Like>,
+        @InjectRepository(LikeSong.Like) private likeRepository: Repository<LikeSong.Like>,
         @Inject(CACHE_MANAGER) private cacheManager: Cache,
         private readonly cloudinaryService: CloudinaryService,
     ) { }
@@ -40,17 +40,28 @@ export class SongsService {
         //     return cachedSongs;
         // }
 
-        const song = await this.songRepository.findOne({
-            where: { song_id },
-            relations: {
-                artist: true,
-                likes: true,
-            }
-        });
+        const queryBuilder = this.songRepository
+            .createQueryBuilder('song')
+            .leftJoin('song.artist', 'artist')
+            .leftJoin('song.likes', 'likes')
+            .select([
+                "song",
+                "artist.artist_id",
+                "artist.artist_name",
+                "artist.avatar",
+                "likes.user_id",
+            ])
+            .where({ song_id });
+
+        const song = await queryBuilder.getOne();
+
         if (!song) throw new BadRequestException('Song not found');
 
         // await this.cacheManager.set(cacheKey, song, 60 * 60 * 1000);
-        return song;
+        return {
+            ...song,
+            likes: song.likes.map(like => like.user_id),
+        };
     }
 
     async findAll(query: Record<string, string>) {
@@ -85,8 +96,15 @@ export class SongsService {
 
         const queryBuilder = this.songRepository
             .createQueryBuilder('song')
-            .leftJoinAndSelect('song.artist', 'artist')
-            .leftJoinAndSelect('song.likes', 'likes')
+            .leftJoin('song.artist', 'artist')
+            .leftJoin('song.likes', 'likes')
+            .select([
+                "song",
+                "artist.artist_id",
+                "artist.artist_name",
+                "artist.avatar",
+                "likes.user_id",
+            ])
             .where(filter)
 
         if (random) {
@@ -106,7 +124,12 @@ export class SongsService {
                 pageSize: pageSize,
                 totalItems
             },
-            result: songs
+            result: songs.map(song => {
+                return {
+                    ...song,
+                    likes: song.likes.map(like => like.user_id),
+                }
+            })
         }
     }
 
@@ -117,21 +140,37 @@ export class SongsService {
 
         const queryBuilder = this.likeRepository
             .createQueryBuilder('like')
-            .leftJoinAndSelect('like.song', 'song')
-            .leftJoinAndSelect('song.artist', 'artist')
+            .leftJoin('like.song', 'song')
+            .leftJoin("song.artist", "artist")
+            .select([
+                'like.song_id',
+                "song",
+                "artist.artist_id",
+                "artist.artist_name",
+                "artist.avatar",
+            ])
             .orderBy('like.liked_at', 'DESC')
-            .offset(skip)
-            .limit(10)
-            .where({ user_id });
+            .where({ user_id })
+            .skip(skip);
 
         const [likes, totalItems] = await Promise.all([
             queryBuilder.getMany(),
             this.likeRepository.count({ where: { user_id } }),
         ]);
 
+        const songs = likes.map(like => ({
+            ...like.song,
+            likes: [user_id],
+            artist: {
+                artist_id: like.song.artist.artist_id,
+                artist_name: like.song.artist.artist_name,
+                avatar: like.song.artist.avatar,
+            }
+        }));
+
         return {
             meta: { totalItems },
-            result: likes.map(like => like.song)
+            result: songs
         };
     }
 
@@ -198,8 +237,7 @@ export class SongsService {
 
         const newLike = new LikeSong.Like({
             user_id,
-            song_id,
-            liked_at: new Date()
+            song_id
         });
         await this.likeRepository.save(newLike);
         return "Like song successfully";

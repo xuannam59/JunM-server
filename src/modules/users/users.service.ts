@@ -214,31 +214,38 @@ export class UsersService {
         const pageSize = +params.get('pageSize') || 10;
         const skip = +params.get('skip') || 0;
 
-        const totalItems = await this.listeningHistoryRepository.count({
-            where: {
-                user_id
-            }
-        });
-        const listenHistory = await this.listeningHistoryRepository.find({
-            where: {
-                user_id
-            },
-            take: pageSize,
-            skip,
-            order: { updated_at: 'DESC' },
-            relations: {
-                song: {
-                    likes: true,
-                    artist: true
-                },
-                video: {
-                    artist: true
-                }
-            }
-        });
+        const queryBuilder = await this.listeningHistoryRepository
+            .createQueryBuilder('listeningHistory')
+            .leftJoin("listeningHistory.song", "song")
+            .leftJoin("song.likes", "likes")
+            .leftJoin("song.artist", "songArtist")
+            .leftJoin("listeningHistory.video", "video")
+            .leftJoin("video.artist", "videoArtist")
+            .select([
+                'listeningHistory.history_id',
+                'listeningHistory.user_id',
+                'listeningHistory.updated_at',
+                'song',
+                'likes.user_id',
+                'songArtist.artist_id',
+                'songArtist.artist_name',
+                'songArtist.avatar',
+                'video',
+                'videoArtist.artist_id',
+                'videoArtist.artist_name',
+                'videoArtist.avatar',
+            ])
+            .orderBy('listeningHistory.updated_at', 'DESC')
+            .take(pageSize)
+            .skip(skip)
+            .where({ user_id })
+
+
+        const listenHistory = await queryBuilder.getMany();
+
         return {
             meta: {
-                totalItems
+                totalItems: listenHistory.length,
             },
             result: listenHistory
         };

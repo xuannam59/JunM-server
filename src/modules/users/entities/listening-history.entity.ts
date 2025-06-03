@@ -31,9 +31,6 @@ export class ListeningHistory {
     @JoinColumn({ name: "video_id" })
     video: Video;
 
-    @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
-    listened_at: Date;
-
     @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP", onUpdate: "CURRENT_TIMESTAMP" })
     updated_at: Date;
 
