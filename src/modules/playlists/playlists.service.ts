@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreatePlaylistDto } from './dto/create-playlist.dto';
 import { UpdatePlaylistDto } from './dto/update-playlist.dto';
 import { IUser } from '@/interfaces/user.interface';
@@ -65,25 +65,31 @@ export class PlaylistsService {
             filter.user_id = user_id;
         }
 
-        const songs = await this.playlistRepository.find({
-            where: filter,
-            take: pageSize,
-            skip,
-            order: {
-                [column]: order,
-            },
-            relations: {
-                playlistSongs: {
-                    song: {
-                        artist: true,
-                        likes: true
-                    },
-                },
-                user: true
-            }
-        })
+        const queryBuilder = this.playlistRepository
+            .createQueryBuilder('playlist')
+            .leftJoin("playlist.playlistSongs", "playlistSong")
+            .leftJoin("playlist.user", "user")
+            .leftJoin("playlistSong.song", "song")
+            .leftJoin("song.artist", "artist")
+            .leftJoin("song.likes", "like")
+            .select([
+                'playlist',
+                'user.user_id',
+                'user.username',
+                'user.full_name',
+                'playlistSong.song_id',
+                'song',
+                'artist.artist_id',
+                'artist.artist_name',
+                'artist.avatar',
+                'like.user_id',
+            ])
+            .orderBy(`playlist.${column}`, order)
+            .skip(skip)
+            .take(pageSize)
+            .where(filter);
 
-        const totalItems = await this.playlistRepository.count({ where: filter });
+        const [playlists, totalItems] = await queryBuilder.getManyAndCount();
 
         return {
             meta: {
@@ -91,8 +97,54 @@ export class PlaylistsService {
                 pageSize: pageSize,
                 totalItems
             },
-            result: songs
+            result: playlists.map(playlist => ({
+                ...playlist,
+                playlistSongs: playlist.playlistSongs.map(playlistSong => ({
+                    song: {
+                        ...playlistSong.song,
+                        likes: playlistSong.song.likes.map(like => like.user_id)
+                    }
+                }))
+            }))
         }
+    }
+
+    async findOne(id: string) {
+        const playlist = await this.playlistRepository
+            .createQueryBuilder('playlist')
+            .leftJoin("playlist.playlistSongs", "playlistSong")
+            .leftJoin("playlist.user", "user")
+            .leftJoin("playlistSong.song", "song")
+            .leftJoin("song.artist", "artist")
+            .leftJoin("song.likes", "like")
+            .select([
+                'playlist',
+                'user.user_id',
+                'user.username',
+                'user.full_name',
+                'playlistSong.song_id',
+                'song',
+                'artist.artist_id',
+                'artist.artist_name',
+                'artist.avatar',
+                'like.user_id',
+            ])
+            .where({ playlist_id: id })
+            .getOne();
+
+        if (!playlist) {
+            throw new BadRequestException(`Playlist with id ${id} not found`);
+        }
+
+        return {
+            ...playlist,
+            playlistSongs: playlist.playlistSongs.map(playlistSong => ({
+                song: {
+                    ...playlistSong.song,
+                    likes: playlistSong.song.likes.map(like => like.user_id)
+                }
+            }))
+        };
     }
 
     async update(id: string, updatePlaylistDto: UpdatePlaylistDto) {
@@ -103,7 +155,7 @@ export class PlaylistsService {
         });
 
         if (!existingPlaylist) {
-            throw new Error(`Playlist with id ${id} not found`);
+            throw new BadRequestException(`Playlist with id ${id} not found`);
         }
 
         await this.playlistRepository.update({ playlist_id: id }, { title, is_public, slug: replaceSlug(title) });
@@ -139,15 +191,13 @@ export class PlaylistsService {
     async remove(id: string) {
         const existingPlaylist = await this.playlistRepository.findOne({ where: { playlist_id: id } });
         if (!existingPlaylist) {
-            throw new Error(`Playlist with id ${id} not found`);
+            throw new BadRequestException(`Playlist with id ${id} not found`);
         }
 
-        // Delete the songs in the playlist
         await this.playlistSongRepository.delete({
             playlist_id: id,
         });
 
-        // Delete the playlist
         await this.playlistRepository.delete({ playlist_id: id });
 
         return "Deleted successfully";

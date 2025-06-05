@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateVideoDto } from './dto/create-video.dto';
 import { UpdateVideoDto } from './dto/update-video.dto';
 import { IUser } from '@/interfaces/user.interface';
@@ -76,7 +76,7 @@ export class VideoService {
       });
 
     if (result.affected === 0) {
-      throw new Error("Video not found");
+      throw new BadRequestException("Video not found");
     }
 
     return "Video updated successfully";
@@ -85,7 +85,7 @@ export class VideoService {
   async remove(id: string) {
     const result = await this.videoRepository.delete({ video_id: id });
     if (result.affected === 0) {
-      throw new Error("Video not found");
+      throw new BadRequestException("Video not found");
     }
     return "Video deleted successfully";
   }

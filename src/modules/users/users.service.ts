@@ -173,34 +173,26 @@ export class UsersService {
         return existUser;
     }
 
-    async createListeningHistory(data: CreateListeningHistoryDto) {
-        const { user_id, song_id, video_id } = data;
+    async createListeningHistory(data: CreateListeningHistoryDto, user_id: string) {
+        const { song_id, video_id } = data;
 
-        const user = await this.userRepository.findOne({
+        const existHistory = await this.listeningHistoryRepository.findOne({
             where: {
-                user_id
+                user_id,
+                song_id: song_id || null,
+                video_id: video_id || null
             }
         });
 
-        if (user) {
-            const existHistory = await this.listeningHistoryRepository.findOne({
-                where: {
-                    user_id,
-                    song_id: song_id || null,
-                    video_id: video_id || null
-                }
+        if (!existHistory) {
+            const listeningHistory = new ListeningHistory({
+                user_id,
+                song_id: song_id || null,
+                video_id: video_id || null
             });
-
-            if (!existHistory) {
-                const listeningHistory = new ListeningHistory({
-                    user_id,
-                    song_id: song_id || null,
-                    video_id: video_id || null
-                });
-                await this.listeningHistoryRepository.save(listeningHistory);
-            } else {
-                await this.listeningHistoryRepository.increment({ song_id, user_id }, 'count_listened', 1);
-            }
+            await this.listeningHistoryRepository.save(listeningHistory);
+        } else {
+            await this.listeningHistoryRepository.increment({ song_id, user_id }, 'count_listened', 1);
         }
 
         await this.songRepository.increment({ song_id }, 'listens', 1);

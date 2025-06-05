@@ -28,12 +28,12 @@ export class UsersController {
   }
 
   @Post("listening-history/create")
-  @Public()
   @ResponseMessage("Create Listening History")
   createListeningHistory(
-    @Body() createListeningHistoryDto: CreateListeningHistoryDto
+    @Body() createListeningHistoryDto: CreateListeningHistoryDto,
+    @User() user: IUser
   ) {
-    return this.usersService.createListeningHistory(createListeningHistoryDto);
+    return this.usersService.createListeningHistory(createListeningHistoryDto, user.user_id);
   }
 
   @Get("listening-history/all")

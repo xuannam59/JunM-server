@@ -26,6 +26,12 @@ export class PlaylistsController {
     return this.playlistsService.findAll(query);
   }
 
+  @Get(":id")
+  @Public()
+  findOne(@Param('id') id: string) {
+    return this.playlistsService.findOne(id);
+  }
+
   @Patch('update/:id')
   @ResponseMessage("Playlist updated successfully")
   update(@Param('id') id: string, @Body() updatePlaylistDto: UpdatePlaylistDto) {
